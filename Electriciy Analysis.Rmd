@@ -1,0 +1,141 @@
+---
+title: "Electricity Analysis"
+author: "Yash Khandelwal"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
+```
+
+
+install.packages("ggplot2","forecast","fpp2","fable")
+
+# **<span style="text-decoration: underline; color: Teal;">Project Objective :</span>** *To  forecast the Annual electricity sales to residential customers in South Australia during 1989 – 2008.*
+
+
+### Moving Average Smoothing
+
+A moving average of order mm can be written as :
+
+$$\bar{T_{t}} = \frac{1}{m} \sum^{k}_{j= -k} {y}_{t} + j$$
+
+|                                                                                                         where m = 2k
+  
+That is, the estimate of the trend-cycle at time T is obtained by averaging values of the time series within k periods of t. Observations that are nearby in time are also likely to be close in value. Therefore, the average eliminates some of the randomness in the data, leaving a smooth trend-cycle component. We call this an mm-MA, meaning a moving average of order mm.
+
+Using the R programming first lets simply plot the graph of Years v/s Sales.
+
+### Residential electricity sales during years 1989 - 2008
+
+The data shown below shows the annual electricity sale for 20 years. By using moving average method lets forecast the sale of electricity for the coming years.
+
+```{r}
+Year <- c(1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008)
+
+Sales <- c(2354.34,2379.71,2318.52,2468.99,2386.09,2569.47,2575.72,2762.72,2844.50,3000.70,3108.10,3357.50,3075.70,3180.60,3221.60,3176.20,3430.60,3527.48,3637.89,3655.00)
+
+df <- data.frame(Year, Sales)
+
+print(df)
+```
+
+```{r message=FALSE}
+library(ggplot2)
+library(forecast)
+library(fpp2)       #fpp2 has built - in dataset "elecsales"
+library(fable)
+
+data(elecsales)
+
+elecsales
+
+```
+
+the graph in RStudio is as below :
+
+```{r}
+autoplot(elecsales) + xlab("Year") + ylab("GWh") +
+   ggtitle("Annual electricity sales: South Australia") + 
+    theme( plot.title = element_text(hjust = 0.5) )
+
+```
+
+Now we will calculate the moving averages in order to smoothing the data. In the last 4  columns of the last table, I have calculated the moving average of order 3,5,7,9 is shown, providing an estimate of the trend-cycle. The more we move towards a bigger moving average , the more smooth is the trend line.
+
+## **<span style="text-decoration: underline; color: purple;"> Calculation of 3M :</span>**
+The first value in this column is the average of the first three observations (1989–1991); the second value in the 3-MA column is the average of the values for 1992–1994; and so on. Each value in the 3-MA column is the average of the observations in the three year window centred on the corresponding year.
+
+### Residential electricity sales (black) along with the 3-MA estimate of the trend-cycle (red).
+
+```{r}
+ma(elecsales, 3)
+autoplot(elecsales, series="Data") +
+  autolayer(ma(elecsales,3), series="3-MA") +
+  xlab("Year") + ylab("GWh") +
+  ggtitle("Annual electricity sales: South Australia", 
+          subtitle = "(3 Moving Average)") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "red") ) + 
+  scale_colour_manual(values=c("Data"="grey50","3-MA"="red"),
+                      breaks=c("Data","3-MA"))
+```
+
+## **<span style="text-decoration: underline; color: purple;"> Calculation of 5M :</span>**
+The first value in this column is the average of the first five observations (1989–1993); the second value in the 5-MA column is the average of the values for 1990–1994; and so on. Each value in the 5-MA column is the average of the observations in the five year window centred on the corresponding year. 
+
+### Residential electricity sales (black) along with the 5-MA estimate of the trend-cycle (red).
+
+```{r}
+ma(elecsales, 5)
+autoplot(elecsales, series="Data") +
+  autolayer(ma(elecsales,5), series="5-MA") +
+  xlab("Year") + ylab("GWh") +
+  ggtitle("Annual electricity sales: South Australia", 
+          subtitle = "(5 Moving Average)") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "red") ) +
+  scale_colour_manual(values=c("Data"="grey50","5-MA"="red"),
+                      breaks=c("Data","5-MA"))
+```
+
+## **<span style="text-decoration: underline; color: purple;"> Calculation of 7M :</span>**
+The first value in this column is the average of the first three observations (1989–1995); the second value in the 7-MA column is the average of the values for 1996–2002; and so on. Each value in the 7-MA column is the average of the observations in the seven year window centred on the corresponding year.
+
+### Residential electricity sales (black) along with the 7-MA estimate of the trend-cycle (red).
+
+```{r}
+ma(elecsales, 7)
+autoplot(elecsales, series="Data") +
+  autolayer(ma(elecsales,7), series="7-MA") +
+  xlab("Year") + ylab("GWh") +
+  ggtitle("Annual electricity sales: South Australia", 
+          subtitle = "(7 Moving Average)") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "red") ) + 
+  scale_colour_manual(values=c("Data"="grey50","7-MA"="red"),
+                      breaks=c("Data","7-MA"))
+```
+
+## **<span style="text-decoration: underline; color: purple;"> Calculation of 9M :</span>**
+The first value in this column is the average of the first three observations (1989–1997); the second value in the 9-MA column is the average of the values for 1998–2006; and so on. Each value in the 9-MA column is the average of the observations in the nine year window centred on the corresponding year.
+
+### Residential electricity sales (black) along with the 7-MA estimate of the trend-cycle (red).
+
+```{r}
+ma(elecsales, 9)
+autoplot(elecsales, series="Data") +
+  autolayer(ma(elecsales,9), series="9-MA") +
+  xlab("Year") + ylab("GWh") +
+  ggtitle("Annual electricity sales: South Australia", 
+          subtitle = "(9 Moving Average)") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "red") ) + 
+  scale_colour_manual(values=c("Data"="grey50","9-MA"="red"),
+                      breaks=c("Data","9-MA"))
+```
+
+## **<span style="color: DarkCyan;">CONCLUSION :</span>**
+It can be seen that the more observations included in the moving average (i.e., the larger the value of k), the smoother the resulting trend-cycle. However, even with a 5 MA, the fitted trend-cycle is still too rough. A much smoother curve, without the little bumps and wiggles, would be a more reasonable estimate; that would require a moving average of higher order. Determining the appropriate length of a moving average is an important task in decomposition methods. As a rule, a larger number of terms in the moving average increases the likelihood that randomness will be eliminated. That argues for using as long a length as possible. However, the longer the length of the moving average, the more terms (and information) are lost in the process of averaging, since k data values are required for a k-term average. Also, longer-term moving average smoothers tend to smooth out the genuine bumps or cycles that are of interest. In applying a k-term moving average, m = (k − 1)/2 neighboring points are needed on either side of the observation. Therefore, it is not possible to estimate the trend-cycle close to the beginning and end of the series. The m terms lost in the beginning of the data are usually of little consequence, but those m lost in the end are critical, since they are the starting point for forecasting the cycle. Not only3/2 Moving averages 95 must the cyclical values for periods t+1, t+2, and so on, be estimated, but the values for periods t, t − 1, t − 2, . . . , t − m + 1 must also be estimated.
